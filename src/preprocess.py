@@ -16,8 +16,7 @@ def preprocess(input_data_path: str, output_data_path: str) -> None:
     except Exception as e:
         logger.error(f'An error occured during the execution of {__file__}')
         logger.error(e)
-        logger.debug(traceback)
-        logger.debug(e)
+        # logger.debug(traceback.format_exc())
         
 def _validate(input_data_path: str, output_data_path: str) -> None:
     input_path_exists: bool = os.path.isfile(input_data_path)
@@ -28,7 +27,7 @@ def _validate(input_data_path: str, output_data_path: str) -> None:
     if not input_path_exists:
         raise ValueError(f'Input data path {input_data_path} does not exist.')
     if not output_path_is_csv:
-        raise ValueError(f'Oputput data path {input_data_path} is not a CSV file.')        
+        raise ValueError(f'Oputput data path {output_data_path} is not a CSV file.')        
 
 def _load_input_data(input_data_path: str) -> DataFrame:
     logger.info(f'Loading raw input data from {input_data_path}')
@@ -53,6 +52,7 @@ def _get_preprocessed_data(data: DataFrame) -> DataFrame:
     data['households'] = np.log(data['households'] + 1)
     data['bedroom_ratio'] = data['total_bedrooms'] / data['total_rooms']
     data['household_rooms'] = data['total_rooms'] / data['households']
+    data = _convert_boolean_columns(data)
     logger.info(f'Successfuly processed data. Shape: {data.shape}')
     return data
 
@@ -60,6 +60,11 @@ def _set_ocean_proximity_as_ohe(data: DataFrame) -> DataFrame:
     ocean_proximity_ohe = pd.get_dummies(data['ocean_proximity']) 
     data = data.join(ocean_proximity_ohe)
     data = data.drop(columns=['ocean_proximity'])
+    return data
+
+def _convert_boolean_columns(data: DataFrame) -> DataFrame:
+    bool_cols = data.select_dtypes(include=['bool']).columns
+    data[bool_cols] = data[bool_cols].astype(int)
     return data
 
 if __name__ == "__main__":
