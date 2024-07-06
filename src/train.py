@@ -23,22 +23,23 @@ def train(train_data_directory: str, output_directory: str, delete_input = False
     except Exception as e:
         logger.error(f'An error occured during the execution of {__file__}')
         logger.error(e)
-        logger.debug(traceback.format_exc())
+        # logger.debug(traceback.format_exc())
 
 def _validate(train_data_directory: str, x_train_path: str, y_train_path: str) -> None:
-    input_directory_exists: bool = os.path.isdir(train_data_directory)
+    train_directory_exists: bool = os.path.isdir(train_data_directory)
     train_x_exists: bool = os.path.isfile(x_train_path)
     train_y_exists: bool = os.path.isfile(y_train_path)
-    if not input_directory_exists:
-        raise ValueError(f'Input data directory at {train_data_directory} does not exist.')
+    if not train_directory_exists:
+        raise ValueError(f'Training data directory at {train_data_directory} does not exist.')
     if not train_x_exists:
-        raise ValueError(f'Input file x_train.npy does not exist at {input_directory_exists}.')
+        raise ValueError(f'Training file {x_train_path} does not exist.')
     if not train_y_exists:
-        raise ValueError(f'Input file y_train.npy does not exist at {input_directory_exists}.')
+        raise ValueError(f'Training file {y_train_path} does not exist.')
     
 def _load_numpy_array(path: str) -> np.ndarray: 
-    logger.info(f'Loading array {path}')
+    logger.info(f'Loading array from {path}')
     data: np.ndarray = np.load(path)
+    logger.info(f'Successfully loaded array from {path}. Shape: {data.shape}')
     return data
 
 def _get_trained_model(x_train: np.ndarray, y_train: np.ndarray) -> LinearRegression:
@@ -68,7 +69,7 @@ def _delete_input_files(x_train_path: str, y_train_path: str) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train linear regression model and save training artifacts.')
-    parser.add_argument('-i', '--train_data_directory', type=str, required=True, help='Path to the train data directory (containing relevant numpy files)')
+    parser.add_argument('-i', '--train_data_directory', type=str, required=True, help='Path to the input train data directory (containing relevant numpy files)')
     parser.add_argument('-o', '--output_directory', type=str, required=True, help='Path to the output directory, where training artifacts will be stored.')
     parser.add_argument('-d', '--delete-input', action='store_true', help='Delete the input files after training.')
     args = parser.parse_args()

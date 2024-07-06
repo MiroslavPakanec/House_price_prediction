@@ -53,7 +53,7 @@ def _get_split_data(data: DataFrame, test_size: float) -> Tuple[np.ndarray, np.n
     logger.info(f'Spliting data (train size: {(1-test_size)*100}%, test_size: {test_size * 100}%).')
     xs: DataFrame = data.drop(['median_house_value'], axis=1)
     xs: np.ndarray = xs.to_numpy()
-    xs: np.ndarray = _normilize(data)
+    xs: np.ndarray = _normilize(xs)
     ys = data['median_house_value']
     ys = ys.to_numpy()
 
