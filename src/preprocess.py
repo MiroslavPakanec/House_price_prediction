@@ -8,15 +8,28 @@ from pandas import DataFrame
 
 def preprocess(input_data_path: str, output_data_path: str) -> None: 
     try:
+        _validate(input_data_path, output_data_path)
         data: DataFrame = _load_input_data(input_data_path)
         data: DataFrame = _get_preprocessed_data(data)
         _save_preprocessed_data(output_data_path, data)
         logger.info('[Done.]')
     except Exception as e:
-        logger.info(e)
+        logger.error(f'An error occured during the execution of {__file__}')
+        logger.error(e)
         logger.debug(traceback)
         logger.debug(e)
         
+def _validate(input_data_path: str, output_data_path: str) -> None:
+    input_path_exists: bool = os.path.isfile(input_data_path)
+    input_path_is_csv: bool = input_data_path.endswith('.csv')
+    output_path_is_csv: bool = output_data_path.endswith('.csv')
+    if not input_path_is_csv:
+        raise ValueError(f'Input data path {input_data_path} is not a CSV file.')
+    if not input_path_exists:
+        raise ValueError(f'Input data path {input_data_path} does not exist.')
+    if not output_path_is_csv:
+        raise ValueError(f'Oputput data path {input_data_path} is not a CSV file.')        
+
 def _load_input_data(input_data_path: str) -> DataFrame:
     logger.info(f'Loading raw input data from {input_data_path}')
     data: DataFrame = pd.read_csv(input_data_path, sep=',')
