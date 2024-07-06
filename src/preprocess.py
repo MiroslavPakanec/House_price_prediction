@@ -8,6 +8,7 @@ from pandas import DataFrame
 
 def preprocess(input_data_path: str, output_data_path: str) -> None: 
     try:
+        logger.info('[Preprocessing...]')
         _validate(input_data_path, output_data_path)
         data: DataFrame = _load_input_data(input_data_path)
         data: DataFrame = _get_preprocessed_data(data)

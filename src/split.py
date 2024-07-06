@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 
 def split(input_data_path: str, output_directory: str, test_size: float, delete_input = False) -> None: 
     try:
+        logger.info('[Spliting dataset...]')
         _validate(input_data_path, test_size)
         data: DataFrame = _load_input_data(input_data_path)
         x_train, y_train, x_test, y_test = _get_split_data(data, test_size)

@@ -10,6 +10,7 @@ from sklearn.linear_model import LinearRegression
 
 def evaluate(test_date_directory: str, model_directory: str, output_directory: str):
     try:
+        logger.info('[Evaluating...]')
         x_test_path: str = os.path.join(test_date_directory, 'x_test.npy')
         y_test_path: str = os.path.join(test_date_directory, 'y_test.npy')
         model_path: str = os.path.join(model_directory, 'linear_regression_model.joblib')

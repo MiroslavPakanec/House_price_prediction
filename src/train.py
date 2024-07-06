@@ -8,6 +8,7 @@ from sklearn.linear_model import LinearRegression
 
 def train(train_data_directory: str, output_directory: str, delete_input = False) -> None: 
     try:
+        logger.info('[Training...]')
         x_train_path: str = os.path.join(train_data_directory, 'x_train.npy')
         y_train_path: str = os.path.join(train_data_directory, 'y_train.npy')
         _validate(train_data_directory, x_train_path, y_train_path)
