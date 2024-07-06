@@ -32,7 +32,7 @@ def _validate(input_data_path: str, output_data_path: str) -> None:
 def _load_input_data(input_data_path: str) -> DataFrame:
     logger.info(f'Loading raw input data from {input_data_path}')
     data: DataFrame = pd.read_csv(input_data_path, sep=',')
-    logger.info(f'Successfuly loaded raw input data. Shape: {data.shape}')
+    logger.info(f'Successfully loaded raw input data. Shape: {data.shape}')
     return data
 
 def _save_preprocessed_data(output_data_path: str, data: DataFrame) -> None:
@@ -40,7 +40,7 @@ def _save_preprocessed_data(output_data_path: str, data: DataFrame) -> None:
     output_data_dir: str = os.path.dirname(output_data_path)
     os.makedirs(output_data_dir, exist_ok=True)
     data.to_csv(output_data_path, index=False)
-    logger.info(f'Successfuly saved processed data.')
+    logger.info(f'Successfully saved processed data.')
 
 def _get_preprocessed_data(data: DataFrame) -> DataFrame:
     logger.info(f'Processing data.')
@@ -53,7 +53,7 @@ def _get_preprocessed_data(data: DataFrame) -> DataFrame:
     data['bedroom_ratio'] = data['total_bedrooms'] / data['total_rooms']
     data['household_rooms'] = data['total_rooms'] / data['households']
     data = _convert_boolean_columns(data)
-    logger.info(f'Successfuly processed data. Shape: {data.shape}')
+    logger.info(f'Successfully processed data. Shape: {data.shape}')
     return data
 
 def _set_ocean_proximity_as_ohe(data: DataFrame) -> DataFrame:

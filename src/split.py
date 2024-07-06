@@ -40,7 +40,7 @@ def _validate(input_data_path: str, test_size: float) -> None:
 def _load_input_data(input_data_path: str) -> DataFrame:
     logger.info(f'Loading preprocessed input data from {input_data_path}')
     data: DataFrame = pd.read_csv(input_data_path, sep=',')
-    logger.info(f'Successfuly loaded preprocessed input data. Shape: {data.shape}')
+    logger.info(f'Successfully loaded preprocessed input data. Shape: {data.shape}')
     return data
 
 def _save_numpy_array(directory: str, filename: str, data: np.ndarray) -> None:
@@ -79,7 +79,7 @@ def _normilize(data: np.ndarray) -> np.ndarray:
     return data
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Preprocess raw data and save to a specified output directory.')
+    parser = argparse.ArgumentParser(description='Split processed data and results to an output directory.')
     parser.add_argument('-i', '--input_data_path', type=str, required=True, help='Path to the preprocessed input data file (numpy file)')
     parser.add_argument('-o', '--output_directory', type=str, required=True, help='Directory to save the output train and test files')
     parser.add_argument('-s', '--test-size', type=float, required=True, default=0.2, help='Size of the test set (value should be between 0 and 1)')
