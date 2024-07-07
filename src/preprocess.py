@@ -8,17 +8,12 @@ from pandas import DataFrame
 from utils.os_utils import load_csv_file, save_csv_file
 
 def preprocess(input_data_path: str, output_data_path: str) -> None: 
-    try:
-        logger.info('[Preprocessing...]')
-        _validate(input_data_path, output_data_path)
-        data: DataFrame = load_csv_file(input_data_path)
-        data: DataFrame = get_preprocessed_data(data)
-        save_csv_file(output_data_path, data)
-        logger.info('[Done.]')
-    except Exception as e:
-        logger.error(f'An error occured during the execution of {__file__}')
-        logger.error(e)
-        # logger.debug(traceback.format_exc())
+    logger.info('[Preprocessing...]')
+    _validate(input_data_path, output_data_path)
+    data: DataFrame = load_csv_file(input_data_path)
+    data: DataFrame = get_preprocessed_data(data)
+    save_csv_file(output_data_path, data)
+    logger.info('[Done.]')
 
 def get_preprocessed_data(data: DataFrame) -> DataFrame:
     logger.info(f'Processing data.')
@@ -66,4 +61,10 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--input_data_path', type=str, required=True, help='Path to the raw input data file (CSV format)')
     parser.add_argument('-o', '--output_data_path', type=str, required=True, help='Path to the output directory and filename (CSV format) to save preprocessed data')
     args = parser.parse_args()
-    preprocess(args.input_data_path, args.output_data_path)
+
+    try:
+        preprocess(args.input_data_path, args.output_data_path)
+    except Exception as e:
+        logger.error(f'An error occured during the execution of {__file__}')
+        logger.error(e)
+        # logger.debug(traceback.format_exc())

@@ -10,20 +10,15 @@ from utils.environment import Environment
 from utils.os_utils import delete_file, load_csv_file, save_numpy_array
 
 def split(input_data_path: str, output_directory: str, test_size: float, delete_input = False) -> None: 
-    try:
-        logger.info('[Spliting dataset...]')
-        _validate(input_data_path, test_size)
-        data: DataFrame = load_csv_file(input_data_path)
-        x_train, y_train, x_test, y_test = _get_split_data(data, test_size)
-        _save_data(output_directory, x_train, y_train, x_test, y_test)
-        
-        if delete_input:
-            delete_file(input_data_path)
-        logger.info('[Done.]')
-    except Exception as e:
-        logger.error(f'An error occured during the execution of {__file__}')
-        logger.error(e)
-        logger.debug(traceback.format_exc())
+    logger.info('[Spliting dataset...]')
+    _validate(input_data_path, test_size)
+    data: DataFrame = load_csv_file(input_data_path)
+    x_train, y_train, x_test, y_test = _get_split_data(data, test_size)
+    _save_data(output_directory, x_train, y_train, x_test, y_test)
+    
+    if delete_input:
+        delete_file(input_data_path)
+    logger.info('[Done.]')
 
 def _validate(input_data_path: str, test_size: float) -> None:
     input_path_exists: bool = os.path.isfile(input_data_path)
@@ -64,4 +59,10 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--test-size', type=float, required=True, default=0.2, help='Size of the test set (value should be between 0 and 1)')
     parser.add_argument('-d', '--delete-input', action='store_true', help='Delete the input file after splitting.')
     args = parser.parse_args()
-    split(args.input_data_path, args.output_directory, args.test_size, args.delete_input)
+    
+    try:
+        split(args.input_data_path, args.output_directory, args.test_size, args.delete_input)
+    except Exception as e:
+        logger.error(f'An error occured during the execution of {__file__}')
+        logger.error(e)
+        logger.debug(traceback.format_exc())

@@ -28,3 +28,9 @@ class Environment(BaseSettings):
     NP_Y_TRAIN_FILENAME: str
     NP_X_TEST_FILENAME: str
     NP_Y_TEST_FILENAME: str
+    PREROCESSING_FILENAME: str
+    EXPERIMENTS_TARGET_PATH: str
+    
+
+    DEFAULT_DATA_PATH: str
+    DEFAULT_TEST_SIZE: float
