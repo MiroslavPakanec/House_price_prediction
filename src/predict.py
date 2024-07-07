@@ -1,32 +1,27 @@
-import joblib
 import argparse
 import traceback
 import numpy as np
 import pandas as pd
 from loguru import logger
-from typing import Literal
 from pandas import DataFrame
-from pydantic import BaseModel
 from preprocess import get_preprocessed_data
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from dtos.housing_sample import HousePriceSample
+from utils.data_utils import transform
+from utils.os_utils import load_model, load_scaler
 
 def predict(sample: HousePriceSample) -> float:
     try:
         logger.info('[Predicting...]')
-        sample_dict = sample.dict()
-        df: DataFrame = pd.DataFrame([sample_dict])
-        df: DataFrame = get_preprocessed_data(df)
-        x: np.ndarray = df.to_numpy()
-
         scaler_path: str = './scaler.joblib'
         model_path: str = './linear_regression_model.joblib'
-        scaler: StandardScaler = _load_scaler(scaler_path)
-        model: LinearRegression = _load_model(model_path)
-
-        x: np.ndarray = _normilize(x, scaler)
+        scaler: StandardScaler = load_scaler(scaler_path)
+        model: LinearRegression = load_model(model_path)
+        
+        x: np.ndarray = _preprocess_sample(sample, scaler)
         y: int = _predict_house_price(x, model)
+        
         logger.info(f'Predicted Median House Value: {y}$')
         return y
     except Exception as e:
@@ -34,20 +29,13 @@ def predict(sample: HousePriceSample) -> float:
         logger.error(e)
         # logger.debug(traceback.format_exc())
 
-
-def _load_scaler(path: str) -> StandardScaler:
-    logger.info(f'Loading scaler from {path}')
-    scaler: StandardScaler = joblib.load(path)
-    return scaler
-
-def _load_model(path: str) -> LinearRegression:
-    logger.info(f'Loading model from {path}')
-    model: LinearRegression = joblib.load(path)
-    return model
-
-def _normilize(data: np.ndarray, scaler: StandardScaler) -> np.ndarray:
-    data = scaler.transform(data)
-    return data
+def _preprocess_sample(sample: HousePriceSample, scaler: StandardScaler) -> np.ndarray:
+    sample_dict = sample.dict()
+    df: DataFrame = pd.DataFrame([sample_dict])
+    df: DataFrame = get_preprocessed_data(df)
+    x: np.ndarray = df.to_numpy()
+    x: np.ndarray = transform(x, scaler)
+    return x
 
 def _predict_house_price(x: np.ndarray, model: LinearRegression) -> int:
     y_pred: np.ndarray = model.predict(x)

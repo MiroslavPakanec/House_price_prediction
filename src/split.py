@@ -3,23 +3,23 @@ import argparse
 import traceback
 from typing import Tuple
 import numpy as np
-import pandas as pd
 from loguru import logger
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
+from utils.os_utils import delete_file, load_csv_file, save_numpy_array
 
 def split(input_data_path: str, output_directory: str, test_size: float, delete_input = False) -> None: 
     try:
         logger.info('[Spliting dataset...]')
         _validate(input_data_path, test_size)
-        data: DataFrame = _load_input_data(input_data_path)
+        data: DataFrame = load_csv_file(input_data_path)
         x_train, y_train, x_test, y_test = _get_split_data(data, test_size)
-        _save_numpy_array(output_directory, 'x_train.npy', x_train)
-        _save_numpy_array(output_directory, 'y_train.npy', y_train)
-        _save_numpy_array(output_directory, 'x_test.npy', x_test)
-        _save_numpy_array(output_directory, 'y_test.npy', y_test)
+        save_numpy_array(output_directory, 'x_train', x_train)
+        save_numpy_array(output_directory, 'y_train', y_train)
+        save_numpy_array(output_directory, 'x_test', x_test)
+        save_numpy_array(output_directory, 'y_test', y_test)
         if delete_input:
-            _delete_input_file(input_data_path)
+            delete_file(input_data_path)
         logger.info('[Done.]')
     except Exception as e:
         logger.error(f'An error occured during the execution of {__file__}')
@@ -37,18 +37,6 @@ def _validate(input_data_path: str, test_size: float) -> None:
     if not is_test_size_valid:
         raise ValueError(f'Test size ({test_size}) must be between 0 and 1 (non-inclusive).')  
 
-def _load_input_data(input_data_path: str) -> DataFrame:
-    logger.info(f'Loading preprocessed input data from {input_data_path}')
-    data: DataFrame = pd.read_csv(input_data_path, sep=',')
-    logger.info(f'Successfully loaded preprocessed input data. Shape: {data.shape}')
-    return data
-
-def _save_numpy_array(directory: str, filename: str, data: np.ndarray) -> None:
-    logger.info(f'Saving {filename} to {directory}')
-    os.makedirs(directory, exist_ok=True)
-    output_data_path: str = os.path.join(directory, filename)
-    np.save(output_data_path, data)
-
 def _get_split_data(data: DataFrame, test_size: float) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     logger.info(f'Spliting data (train size: {(1-test_size)*100}%, test_size: {test_size * 100}%).')
     xs: DataFrame = data.drop(['median_house_value'], axis=1)
@@ -63,14 +51,6 @@ def _get_split_data(data: DataFrame, test_size: float) -> Tuple[np.ndarray, np.n
     logger.info(f'Test X shape: {x_test.shape}')
     logger.info(f'Test Y shape: {y_test.shape}')
     return x_train, y_train, x_test, y_test
-
-def _delete_input_file(input_data_path: str) -> None:
-    try:
-        os.remove(input_data_path)
-        logger.info(f'Successfully deleted file at {input_data_path}')
-    except OSError as e:
-        logger.error(f'Error deleting file at {input_data_path}')
-        logger.debug(e)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Split processed data and results to an output directory.')

@@ -5,14 +5,15 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 from pandas import DataFrame
+from utils.os_utils import load_csv_file, save_csv_file
 
 def preprocess(input_data_path: str, output_data_path: str) -> None: 
     try:
         logger.info('[Preprocessing...]')
         _validate(input_data_path, output_data_path)
-        data: DataFrame = _load_input_data(input_data_path)
+        data: DataFrame = load_csv_file(input_data_path)
         data: DataFrame = get_preprocessed_data(data)
-        _save_preprocessed_data(output_data_path, data)
+        save_csv_file(output_data_path, data)
         logger.info('[Done.]')
     except Exception as e:
         logger.error(f'An error occured during the execution of {__file__}')
@@ -43,19 +44,6 @@ def _validate(input_data_path: str, output_data_path: str) -> None:
         raise ValueError(f'Input data path {input_data_path} does not exist.')
     if not output_path_is_csv:
         raise ValueError(f'Oputput data path {output_data_path} is not a CSV file.')        
-
-def _load_input_data(input_data_path: str) -> DataFrame:
-    logger.info(f'Loading raw input data from {input_data_path}')
-    data: DataFrame = pd.read_csv(input_data_path, sep=',')
-    logger.info(f'Successfully loaded raw input data. Shape: {data.shape}')
-    return data
-
-def _save_preprocessed_data(output_data_path: str, data: DataFrame) -> None:
-    logger.info(f'Saving processed data to {output_data_path}')
-    output_data_dir: str = os.path.dirname(output_data_path)
-    os.makedirs(output_data_dir, exist_ok=True)
-    data.to_csv(output_data_path, index=False)
-    logger.info(f'Successfully saved processed data.')
 
 def _set_ocean_proximity_as_ohe(data: DataFrame) -> DataFrame:
     ocean_proximity_categories = ['<1H OCEAN', 'INLAND', 'ISLAND', 'NEAR BAY', 'NEAR OCEAN']
