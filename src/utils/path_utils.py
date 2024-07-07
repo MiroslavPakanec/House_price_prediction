@@ -1,6 +1,7 @@
 import os
 from typing import Tuple
 from utils.environment import Environment
+from utils.exceptions import ExperimentAlreadyExists
 
 
 def get_model_path(experiment_name: Tuple[str, None]) -> str:
@@ -19,3 +20,8 @@ def get_experiment_directory_path(experiment_name: str) -> str:
 def get_experiment_preprocessed_filepath(experiment_name: str) -> str:
     experiment_path: str = get_experiment_directory_path(experiment_name)
     return os.path.join(experiment_path, Environment().PREROCESSING_FILENAME)
+
+def validate_experiment_does_not_exist(experiment_name: str) -> str:
+    experiment_directory_path: str = get_experiment_directory_path(experiment_name)
+    if os.path.isdir(experiment_directory_path):
+        raise ExperimentAlreadyExists(experiment_name)
