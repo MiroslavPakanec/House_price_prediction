@@ -21,7 +21,7 @@ def predict(sample: HousePriceSample) -> float:
         x: np.ndarray = df.to_numpy()
 
         scaler_path: str = './scaler.joblib'
-        model_path: str = './model.joblib'
+        model_path: str = './linear_regression_model.joblib'
         scaler: StandardScaler = _load_scaler(scaler_path)
         model: LinearRegression = _load_model(model_path)
 
