@@ -10,9 +10,11 @@ set POPULATION=961
 set HOUSEHOLDS=272
 set MEDIAN_INCOME=3.5156
 set OCEAN_PROXIMITY="NEAR BAY"
+set EXPERIMENT=ex_1
 
 REM Construct the command using temporary variables
 set COMMAND=python .\src\predict.py ^
+    --experiment %EXPERIMENT% ^
     --longitude %LONGITUDE% ^
     --latitude %LATITUDE% ^
     --housing_median_age %HOUSING_MEDIAN_AGE% ^

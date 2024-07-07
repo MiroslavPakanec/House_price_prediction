@@ -10,9 +10,11 @@ POPULATION=961
 HOUSEHOLDS=272
 MEDIAN_INCOME=3.5156
 OCEAN_PROXIMITY="NEAR BAY"
+EXPERIMENT=ex_1
 
 # Construct the command using temporary variables
 COMMAND="python ./src/predict.py \
+    --experiment $EXPERIMENT \
     --longitude $LONGITUDE \
     --latitude $LATITUDE \
     --housing_median_age $HOUSING_MEDIAN_AGE \

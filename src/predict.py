@@ -1,5 +1,6 @@
 import argparse
 import traceback
+from typing import Tuple
 import numpy as np
 import pandas as pd
 from loguru import logger
@@ -9,14 +10,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from dtos.housing_sample import HousePriceSample
 from utils.data_utils import transform
-from utils.environment import Environment
 from utils.os_utils import load_model, load_scaler
+from utils.path_utils import get_model_path, get_scaler_path
 
-def predict(sample: HousePriceSample) -> float:
+def predict(sample: HousePriceSample, experiment_name: Tuple[str, None]) -> float:
     try:
         logger.info('[Predicting...]')
-        scaler: StandardScaler = load_scaler(Environment().SCALER_PATH)
-        model: LinearRegression = load_model(Environment().MODEL_PATH)
+        scaler: StandardScaler = load_scaler(get_scaler_path(experiment_name))
+        model: LinearRegression = load_model(get_model_path(experiment_name))
         
         x: np.ndarray = _preprocess_sample(sample, scaler)
         y: int = _predict_house_price(x, model)    
@@ -41,6 +42,7 @@ def _predict_house_price(x: np.ndarray, model: LinearRegression) -> int:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Predict a house price.')
+    parser.add_argument('-exp', '--experiment', type=str, required=False, help='Experiment name to determine, which model to use.')
     parser.add_argument('-lat', '--latitude', type=float, required=True, help='Latitude of the house.')
     parser.add_argument('-long', '--longitude', type=float, required=True, help='Longitude of the house.')
     parser.add_argument('-age', '--housing_median_age', type=int, required=True, help='Median age of a house within a block; a lower number is a newer building.')
@@ -56,6 +58,6 @@ if __name__ == "__main__":
                               total_rooms=args.total_rooms, total_bedrooms=args.total_bedrooms,
                               population=args.population, households=args.households,
                               median_income=args.median_income, ocean_proximity=args.ocean_proximity)
-    predict(sample)
+    predict(sample, args.experiment)
 
 
