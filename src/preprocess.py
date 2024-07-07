@@ -11,13 +11,27 @@ def preprocess(input_data_path: str, output_data_path: str) -> None:
         logger.info('[Preprocessing...]')
         _validate(input_data_path, output_data_path)
         data: DataFrame = _load_input_data(input_data_path)
-        data: DataFrame = _get_preprocessed_data(data)
+        data: DataFrame = get_preprocessed_data(data)
         _save_preprocessed_data(output_data_path, data)
         logger.info('[Done.]')
     except Exception as e:
         logger.error(f'An error occured during the execution of {__file__}')
         logger.error(e)
         # logger.debug(traceback.format_exc())
+
+def get_preprocessed_data(data: DataFrame) -> DataFrame:
+    logger.info(f'Processing data.')
+    data = data.dropna()
+    data = _set_ocean_proximity_as_ohe(data)
+    data['total_rooms'] = np.log(data['total_rooms'] + 1)
+    data['total_bedrooms'] = np.log(data['total_bedrooms'] + 1)
+    data['population'] = np.log(data['population'] + 1)
+    data['households'] = np.log(data['households'] + 1)
+    data['bedroom_ratio'] = data['total_bedrooms'] / data['total_rooms']
+    data['household_rooms'] = data['total_rooms'] / data['households']
+    data = _convert_boolean_columns(data)
+    logger.info(f'Successfully processed data. Shape: {data.shape}')
+    return data
         
 def _validate(input_data_path: str, output_data_path: str) -> None:
     input_path_exists: bool = os.path.isfile(input_data_path)
@@ -43,21 +57,12 @@ def _save_preprocessed_data(output_data_path: str, data: DataFrame) -> None:
     data.to_csv(output_data_path, index=False)
     logger.info(f'Successfully saved processed data.')
 
-def _get_preprocessed_data(data: DataFrame) -> DataFrame:
-    logger.info(f'Processing data.')
-    data = data.dropna()
-    data = _set_ocean_proximity_as_ohe(data)
-    data['total_rooms'] = np.log(data['total_rooms'] + 1)
-    data['total_bedrooms'] = np.log(data['total_bedrooms'] + 1)
-    data['population'] = np.log(data['population'] + 1)
-    data['households'] = np.log(data['households'] + 1)
-    data['bedroom_ratio'] = data['total_bedrooms'] / data['total_rooms']
-    data['household_rooms'] = data['total_rooms'] / data['households']
-    data = _convert_boolean_columns(data)
-    logger.info(f'Successfully processed data. Shape: {data.shape}')
-    return data
-
 def _set_ocean_proximity_as_ohe(data: DataFrame) -> DataFrame:
+    ocean_proximity_categories = ['<1H OCEAN', 'INLAND', 'ISLAND', 'NEAR BAY', 'NEAR OCEAN']
+    for category in ocean_proximity_categories:
+        if category not in data['ocean_proximity'].unique():
+            data[category] = 0
+
     ocean_proximity_ohe = pd.get_dummies(data['ocean_proximity']) 
     data = data.join(ocean_proximity_ohe)
     data = data.drop(columns=['ocean_proximity'])

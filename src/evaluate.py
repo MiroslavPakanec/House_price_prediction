@@ -6,6 +6,7 @@ import traceback
 import numpy as np
 from loguru import logger
 from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 
 def evaluate(test_date_directory: str, model_directory: str, output_directory: str):
@@ -14,12 +15,15 @@ def evaluate(test_date_directory: str, model_directory: str, output_directory: s
         x_test_path: str = os.path.join(test_date_directory, 'x_test.npy')
         y_test_path: str = os.path.join(test_date_directory, 'y_test.npy')
         model_path: str = os.path.join(model_directory, 'linear_regression_model.joblib')
-        _validate(test_date_directory, x_test_path, y_test_path, model_path)
+        scaler_path: str = os.path.join(model_directory, 'scaler.joblib')
+        _validate(test_date_directory, x_test_path, y_test_path, model_path, scaler_path)
 
         x_test: np.ndarray = _load_numpy_array(x_test_path)
         y_test: np.ndarray = _load_numpy_array(y_test_path)
         model: LinearRegression = _load_model(model_path)
-        
+        scaler: LinearRegression = _load_scaler(scaler_path)
+        x_test: np.ndarray = _normilize(x_test, scaler)
+
         rmse: float = _get_rmse(model, x_test, y_test)
         r2: float = _get_r2(model, x_test, y_test)
         _save_metrics(output_directory, rmse, r2)
@@ -30,11 +34,12 @@ def evaluate(test_date_directory: str, model_directory: str, output_directory: s
         # logger.debug(traceback.format_exc())
     
 
-def _validate(test_date_directory: str, x_test_path: str, y_test_path: str, model_path: str):
+def _validate(test_date_directory: str, x_test_path: str, y_test_path: str, model_path: str, scaler_path: str):
     test_directory_exists: bool = os.path.isdir(test_date_directory)
     test_x_exists: bool = os.path.isfile(x_test_path)
     test_y_exists: bool = os.path.isfile(y_test_path)
     model_exists: bool = os.path.isfile(model_path)
+    scaler_exists: bool = os.path.isfile(scaler_path)
     if not test_directory_exists:
         raise ValueError(f'Testing data directory at {test_directory_exists} does not exist.')
     if not test_x_exists:
@@ -43,6 +48,8 @@ def _validate(test_date_directory: str, x_test_path: str, y_test_path: str, mode
         raise ValueError(f'Testing file {test_y_exists} does not exist.')
     if not model_exists:
         raise ValueError(f'Model {model_path} does not exist.')
+    if not scaler_exists:
+        raise ValueError(f'Scaler {scaler_path} does not exist.')
     
 def _load_numpy_array(path: str) -> np.ndarray: 
     logger.info(f'Loading array from {path}')
@@ -54,6 +61,15 @@ def _load_model(path: str) -> LinearRegression:
     logger.info(f'Loading model from {path}')
     model: LinearRegression = joblib.load(path)
     return model
+
+def _load_scaler(path: str) -> StandardScaler:
+    logger.info(f'Loading scaler from {path}')
+    scaler: StandardScaler = joblib.load(path)
+    return scaler
+
+def _normilize(data: np.ndarray, scaler: StandardScaler) -> np.ndarray:
+    data = scaler.transform(data)
+    return data
 
 def _get_rmse(model: LinearRegression, x_test: np.ndarray, y_test: np.ndarray) -> float:
     logger.info('Calculating RMSE.')

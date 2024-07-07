@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 from pandas import DataFrame
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
 def split(input_data_path: str, output_directory: str, test_size: float, delete_input = False) -> None: 
@@ -25,7 +24,7 @@ def split(input_data_path: str, output_directory: str, test_size: float, delete_
     except Exception as e:
         logger.error(f'An error occured during the execution of {__file__}')
         logger.error(e)
-        # logger.debug(traceback.format_exc())
+        logger.debug(traceback.format_exc())
 
 def _validate(input_data_path: str, test_size: float) -> None:
     input_path_exists: bool = os.path.isfile(input_data_path)
@@ -54,7 +53,6 @@ def _get_split_data(data: DataFrame, test_size: float) -> Tuple[np.ndarray, np.n
     logger.info(f'Spliting data (train size: {(1-test_size)*100}%, test_size: {test_size * 100}%).')
     xs: DataFrame = data.drop(['median_house_value'], axis=1)
     xs: np.ndarray = xs.to_numpy()
-    xs: np.ndarray = _normilize(xs)
     ys = data['median_house_value']
     ys = ys.to_numpy()
 
@@ -73,11 +71,6 @@ def _delete_input_file(input_data_path: str) -> None:
     except OSError as e:
         logger.error(f'Error deleting file at {input_data_path}')
         logger.debug(e)
-
-def _normilize(data: np.ndarray) -> np.ndarray:
-    scaler = StandardScaler()
-    data = scaler.fit_transform(data)
-    return data
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Split processed data and results to an output directory.')

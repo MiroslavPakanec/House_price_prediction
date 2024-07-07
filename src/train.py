@@ -4,6 +4,7 @@ import argparse
 import traceback
 import numpy as np
 from loguru import logger
+from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 
 def train(train_data_directory: str, output_directory: str, delete_input = False) -> None: 
@@ -15,9 +16,12 @@ def train(train_data_directory: str, output_directory: str, delete_input = False
         
         x_train: np.ndarray = _load_numpy_array(x_train_path)
         y_train: np.ndarray = _load_numpy_array(y_train_path)
+        
+        x_train, scaler = _normilize(x_train)
         model: LinearRegression = _get_trained_model(x_train, y_train)
         _save_model(output_directory, model)
-        
+        _save_scaler(output_directory, scaler)
+
         if delete_input:
             _delete_input_files(x_train_path, y_train_path)
         logger.info('[Done.]')
@@ -43,6 +47,11 @@ def _load_numpy_array(path: str) -> np.ndarray:
     logger.info(f'Successfully loaded array from {path}. Shape: {data.shape}')
     return data
 
+def _normilize(data: np.ndarray) -> np.ndarray:
+    scaler = StandardScaler()
+    data = scaler.fit_transform(data)
+    return data, scaler
+
 def _get_trained_model(x_train: np.ndarray, y_train: np.ndarray) -> LinearRegression:
     logger.info(f'Training model.')
     model = LinearRegression()
@@ -51,11 +60,18 @@ def _get_trained_model(x_train: np.ndarray, y_train: np.ndarray) -> LinearRegres
     return model
 
 def _save_model(directory: str, model: LinearRegression) -> None:
-    logger.info(f'Saving to {directory}')
+    logger.info(f'Saving model to {directory}')
     os.makedirs(directory, exist_ok=True)
     model_path: str = os.path.join(directory, 'linear_regression_model.joblib')
     joblib.dump(model, model_path)
     logger.info(f'Successfully saved the model to {model_path}')
+
+def _save_scaler(directory: str, scaler: StandardScaler) -> None:
+    logger.info(f'Saving scaler to {directory}')
+    os.makedirs(directory, exist_ok=True)
+    scaler_path: str = os.path.join(directory, 'scaler.joblib')
+    joblib.dump(scaler, scaler_path)
+    logger.info(f'Successfully saved the scaler to {scaler_path}')
 
 def _delete_input_files(x_train_path: str, y_train_path: str) -> None:
     try:
