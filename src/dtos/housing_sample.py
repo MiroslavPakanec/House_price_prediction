@@ -1,7 +1,7 @@
 from typing import Literal
 from pydantic import BaseModel
 
-class HousePriceSample(BaseModel):
+class HousingSample(BaseModel):
     latitude: float
     longitude: float
     housing_median_age: int

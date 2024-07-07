@@ -7,6 +7,7 @@ from static.render import render
 from utils.environment import Environment
 from utils.api_utils import get_uptime
 from utils.logging.config import (initialize_logging, initialize_logging_middleware)
+from routers.inference_router import inference_router
 
 app = FastAPI()
 
@@ -20,6 +21,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(inference_router, tags=['Predictions'])
 
 @app.get('/health')
 def health():

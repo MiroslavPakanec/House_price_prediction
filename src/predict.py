@@ -8,27 +8,22 @@ from pandas import DataFrame
 from preprocess import get_preprocessed_data
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
-from dtos.housing_sample import HousePriceSample
+from dtos.housing_sample import HousingSample
 from utils.data_utils import transform
 from utils.os_utils import load_model, load_scaler
 from utils.path_utils import get_model_path, get_scaler_path
 
-def predict(sample: HousePriceSample, experiment_name: Tuple[str, None]) -> float:
-    try:
-        logger.info('[Predicting...]')
-        scaler: StandardScaler = load_scaler(get_scaler_path(experiment_name))
-        model: LinearRegression = load_model(get_model_path(experiment_name))
-        
-        x: np.ndarray = _preprocess_sample(sample, scaler)
-        y: int = _predict_house_price(x, model)    
-        logger.info(f'Predicted Median House Value: {y}$')
-        return y
-    except Exception as e:
-        logger.error(f'An error occured during the execution of {__file__}')
-        logger.error(e)
-        # logger.debug(traceback.format_exc())
+def predict(sample: HousingSample, experiment_name: Tuple[str, None]) -> float:
+    logger.info('[Predicting...]')
+    scaler: StandardScaler = load_scaler(get_scaler_path(experiment_name))
+    model: LinearRegression = load_model(get_model_path(experiment_name))
+    
+    x: np.ndarray = _preprocess_sample(sample, scaler)
+    y: int = _predict_house_price(x, model)    
+    logger.info(f'Predicted Median House Value: {y}$')
+    return y
 
-def _preprocess_sample(sample: HousePriceSample, scaler: StandardScaler) -> np.ndarray:
+def _preprocess_sample(sample: HousingSample, scaler: StandardScaler) -> np.ndarray:
     sample_dict = sample.dict()
     df: DataFrame = pd.DataFrame([sample_dict])
     df: DataFrame = get_preprocessed_data(df)
@@ -53,11 +48,13 @@ if __name__ == "__main__":
     parser.add_argument('-mi', '--median_income', type=float, required=True, help='Median income for households within a block of houses (measured in tens of thousands of US Dollars).')
     parser.add_argument('-op', '--ocean_proximity', type=str, required=True, choices=['<1H OCEAN', 'INLAND', 'ISLAND', 'NEAR BAY', 'NEAR OCEAN'], help='Location of the house w.r.t ocean/sea.')
     args = parser.parse_args()
-    sample = HousePriceSample(latitude=args.latitude, longitude=args.longitude,
-                              housing_median_age=args.housing_median_age,
-                              total_rooms=args.total_rooms, total_bedrooms=args.total_bedrooms,
-                              population=args.population, households=args.households,
-                              median_income=args.median_income, ocean_proximity=args.ocean_proximity)
-    predict(sample, args.experiment)
+    sample = HousingSample(latitude=args.latitude, longitude=args.longitude, housing_median_age=args.housing_median_age, total_rooms=args.total_rooms, total_bedrooms=args.total_bedrooms, population=args.population, households=args.households, median_income=args.median_income, ocean_proximity=args.ocean_proximity)
+    
+    try: 
+        predict(sample, args.experiment)
+    except Exception as e:
+        logger.error(f'An error occured during the execution of {__file__}')
+        logger.error(e)
+        # logger.debug(traceback.format_exc())
 
 
