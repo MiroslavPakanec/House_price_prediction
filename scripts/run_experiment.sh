@@ -2,29 +2,29 @@
 
 # Run Experiment
 
-# Handle parameters: [name] [-Force] [-Clean]
+# Handle parameters: [name] [--force] [--clean]
 if [ -z "$1" ]; then
-    echo "Usage: run_experiment.sh <name> [-Force] [-Clean]"
+    echo "Usage: run_experiment.sh <name> [--force] [--clean]"
     exit 1
 fi
 
 NAME=$1
 FORCE_FLAG=""
 CLEAN_FLAG=""
-if [ "$2" == "-Force" ]; then
-    FORCE_FLAG="-Force"
-    if [ "$3" == "-Clean" ]; then
-        CLEAN_FLAG="-Clean"
+if [ "$2" == "--force" ]; then
+    FORCE_FLAG="--force"
+    if [ "$3" == "--clean" ]; then
+        CLEAN_FLAG="--clean"
     fi
-elif [ "$2" == "-Clean" ]; then
-    CLEAN_FLAG="-Clean"
+elif [ "$2" == "--clean" ]; then
+    CLEAN_FLAG="--clean"
 fi
 
 # Prepare experiment directory
 EXPERIMENT_DIR="./experiments/$NAME"
 if [ -d "$EXPERIMENT_DIR" ]; then
     if [ "$FORCE_FLAG" == "" ]; then
-        echo "Experiment directory $EXPERIMENT_DIR already exists. Use -Force flag to overwrite."
+        echo "Experiment directory $EXPERIMENT_DIR already exists. Use --force flag to overwrite."
         exit 1
     else
         echo "Experiment directory $EXPERIMENT_DIR already exists. Clearing contents."

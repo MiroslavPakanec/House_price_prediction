@@ -1,0 +1,21 @@
+services:
+  house-price-predictor:
+    container_name: ${CONTAINER_NAME}
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./.env
+    ports:
+      - ${HOST_PORT}:${CONTAINER_PORT}
+    ipc: ${IPC}
+    volumes:
+      - ${DATA_SOURCE_PATH}:${DATA_TARGET_PATH}
+      - ${EXPERIMENTS_SOURCE_PATH}:${EXPERIMENTS_TARGET_PATH}
+      - ${MODELS_SOURCE_DIRECTORY}:${MODELS_TARGET_DIRECTORY}
+    networks:
+      - house-price-net
+networks:
+  house-price-net:
+    driver: bridge
+    name: house-price-net

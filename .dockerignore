@@ -1,0 +1,6 @@
+data/
+experiments/
+notebooks/
+.git/
+**/__pycache__
+**/*.bat

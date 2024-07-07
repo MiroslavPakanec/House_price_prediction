@@ -21,7 +21,7 @@ COMMAND="python ./src/predict.py \
     --population $POPULATION \
     --households $HOUSEHOLDS \
     --median_income $MEDIAN_INCOME \
-    --ocean_proximity $OCEAN_PROXIMITY"
+    --ocean_proximity \"$OCEAN_PROXIMITY\""
 
 # Execute the command
 eval $COMMAND
