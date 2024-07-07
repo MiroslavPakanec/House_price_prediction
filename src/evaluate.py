@@ -7,15 +7,16 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from utils.data_utils import transform
+from utils.environment import Environment
 from utils.os_utils import delete_file, load_model, load_numpy_array, load_scaler, save_metrics
 
 def evaluate(test_date_directory: str, model_directory: str, output_directory: str, delete_input = False):
     try:
         logger.info('[Evaluating...]')
-        x_test_path: str = os.path.join(test_date_directory, 'x_test.npy')
-        y_test_path: str = os.path.join(test_date_directory, 'y_test.npy')
-        model_path: str = os.path.join(model_directory, 'linear_regression_model.joblib')
-        scaler_path: str = os.path.join(model_directory, 'scaler.joblib')
+        x_test_path: str = os.path.join(test_date_directory, Environment().NP_X_TEST_FILENAME)
+        y_test_path: str = os.path.join(test_date_directory, Environment().NP_Y_TEST_FILENAME)
+        model_path: str = os.path.join(model_directory, Environment().MODEL_FILENAME)
+        scaler_path: str = os.path.join(model_directory, Environment().SCALER_FILENAME)
         _validate(test_date_directory, x_test_path, y_test_path, model_path, scaler_path)
 
         x_test: np.ndarray = load_numpy_array(x_test_path)
@@ -26,7 +27,7 @@ def evaluate(test_date_directory: str, model_directory: str, output_directory: s
 
         rmse: float = _get_rmse(model, x_test, y_test)
         r2: float = _get_r2(model, x_test, y_test)
-        save_metrics(output_directory, 'metrics', rmse, r2)
+        save_metrics(output_directory, Environment().METRICS_FILENAME, rmse, r2)
 
         if delete_input:
             delete_file(x_test_path)

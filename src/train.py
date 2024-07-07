@@ -5,13 +5,14 @@ import numpy as np
 from loguru import logger
 from sklearn.linear_model import LinearRegression
 from utils.data_utils import fit_transform
+from utils.environment import Environment
 from utils.os_utils import delete_file, save_model, save_scaler
 
 def train(train_data_directory: str, output_directory: str, delete_input = False) -> None: 
     try:
         logger.info('[Training...]')
-        x_train_path: str = os.path.join(train_data_directory, 'x_train.npy')
-        y_train_path: str = os.path.join(train_data_directory, 'y_train.npy')
+        x_train_path: str = os.path.join(train_data_directory, Environment().NP_X_TRAIN_FILENAME)
+        y_train_path: str = os.path.join(train_data_directory, Environment().NP_Y_TRAIN_FILENAME)
         _validate(train_data_directory, x_train_path, y_train_path)
         
         x_train: np.ndarray = _load_numpy_array(x_train_path)
@@ -19,8 +20,8 @@ def train(train_data_directory: str, output_directory: str, delete_input = False
         
         x_train, scaler = fit_transform(x_train)
         model: LinearRegression = _get_trained_model(x_train, y_train)
-        save_model(output_directory, 'linear_regression_model', model)
-        save_scaler(output_directory, 'scaler', scaler)
+        save_model(output_directory, Environment().MODEL_FILENAME, model)
+        save_scaler(output_directory, Environment().SCALER_FILENAME, scaler)
 
         if delete_input:
             delete_file(x_train_path)

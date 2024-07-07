@@ -12,27 +12,27 @@ from sklearn.linear_model import LinearRegression
 def save_scaler(directory: str, filename: str, scaler: StandardScaler) -> None:
     logger.info(f'Saving scaler to {directory}')
     os.makedirs(directory, exist_ok=True)
-    scaler_path: str = os.path.join(directory, f'{filename}.joblib')
+    scaler_path: str = os.path.join(directory, filename)
     joblib.dump(scaler, scaler_path)
     logger.info(f'Successfully saved the scaler to {scaler_path}')
 
 def save_model(directory: str, filename: str, model: LinearRegression) -> None:
     logger.info(f'Saving model to {directory}')
     os.makedirs(directory, exist_ok=True)
-    model_path: str = os.path.join(directory, f'{filename}.joblib')
+    model_path: str = os.path.join(directory, filename)
     joblib.dump(model, model_path)
     logger.info(f'Successfully saved the model to {model_path}')
 
 def save_numpy_array(directory: str, filename: str, data: np.ndarray) -> None:
-    logger.info(f'Saving {filename}.npy to {directory}')
+    logger.info(f'Saving {filename} to {directory}')
     os.makedirs(directory, exist_ok=True)
-    output_data_path: str = os.path.join(directory, f'{filename}.npy')
+    output_data_path: str = os.path.join(directory, filename)
     np.save(output_data_path, data)
     
 def save_metrics(directory: str, filename: str, rmse: float, r2: float) -> None:
     logger.info(f'Saving RMSE to {directory}')
     os.makedirs(directory, exist_ok=True)
-    metrics_path: str = os.path.join(directory, f'{filename}.json')
+    metrics_path: str = os.path.join(directory, filename)
     metrics = {'rmse': rmse, 'r2': r2}
     with open(metrics_path, 'w') as f:
         json.dump(metrics, f)

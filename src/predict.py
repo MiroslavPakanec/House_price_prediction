@@ -9,19 +9,17 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from dtos.housing_sample import HousePriceSample
 from utils.data_utils import transform
+from utils.environment import Environment
 from utils.os_utils import load_model, load_scaler
 
 def predict(sample: HousePriceSample) -> float:
     try:
         logger.info('[Predicting...]')
-        scaler_path: str = './scaler.joblib'
-        model_path: str = './linear_regression_model.joblib'
-        scaler: StandardScaler = load_scaler(scaler_path)
-        model: LinearRegression = load_model(model_path)
+        scaler: StandardScaler = load_scaler(Environment().SCALER_PATH)
+        model: LinearRegression = load_model(Environment().MODEL_PATH)
         
         x: np.ndarray = _preprocess_sample(sample, scaler)
-        y: int = _predict_house_price(x, model)
-        
+        y: int = _predict_house_price(x, model)    
         logger.info(f'Predicted Median House Value: {y}$')
         return y
     except Exception as e:

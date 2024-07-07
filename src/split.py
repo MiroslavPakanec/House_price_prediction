@@ -6,6 +6,7 @@ import numpy as np
 from loguru import logger
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
+from utils.environment import Environment
 from utils.os_utils import delete_file, load_csv_file, save_numpy_array
 
 def split(input_data_path: str, output_directory: str, test_size: float, delete_input = False) -> None: 
@@ -14,10 +15,8 @@ def split(input_data_path: str, output_directory: str, test_size: float, delete_
         _validate(input_data_path, test_size)
         data: DataFrame = load_csv_file(input_data_path)
         x_train, y_train, x_test, y_test = _get_split_data(data, test_size)
-        save_numpy_array(output_directory, 'x_train', x_train)
-        save_numpy_array(output_directory, 'y_train', y_train)
-        save_numpy_array(output_directory, 'x_test', x_test)
-        save_numpy_array(output_directory, 'y_test', y_test)
+        _save_data(output_directory, x_train, y_train, x_test, y_test)
+        
         if delete_input:
             delete_file(input_data_path)
         logger.info('[Done.]')
@@ -36,6 +35,12 @@ def _validate(input_data_path: str, test_size: float) -> None:
         raise ValueError(f'Input data path {input_data_path} does not exist.')  
     if not is_test_size_valid:
         raise ValueError(f'Test size ({test_size}) must be between 0 and 1 (non-inclusive).')  
+
+def _save_data(output_directory:str, x_train: np.ndarray, y_train: np.ndarray, x_test: np.ndarray, y_test: np.ndarray) -> None:
+    save_numpy_array(output_directory, Environment().NP_X_TRAIN_FILENAME, x_train)
+    save_numpy_array(output_directory, Environment().NP_Y_TRAIN_FILENAME, y_train)
+    save_numpy_array(output_directory, Environment().NP_X_TEST_FILENAME, x_test)
+    save_numpy_array(output_directory, Environment().NP_Y_TEST_FILENAME, y_test)
 
 def _get_split_data(data: DataFrame, test_size: float) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     logger.info(f'Spliting data (train size: {(1-test_size)*100}%, test_size: {test_size * 100}%).')
