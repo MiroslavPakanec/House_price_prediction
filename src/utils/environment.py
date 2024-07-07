@@ -14,10 +14,13 @@ def singleton(_class):
 @singleton
 class Environment(BaseSettings):
     model_config = SettingsConfigDict(env_file='../.env', env_file_encoding='utf-8')
-    
+
+    HOST_IP: str
+    CONTAINER_PORT: int
+    COMPOSE_PROJECT_NAME: str
+
     MODEL_PATH: str
     SCALER_PATH: str
-    
     MODEL_FILENAME: str
     SCALER_FILENAME: str
     METRICS_FILENAME: str

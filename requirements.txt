@@ -5,6 +5,10 @@ seaborn
 scikit-learn==1.3.0
 loguru
 
+gunicorn
+uvicorn
+fastapi
+
 pydantic
 pydantic_settings
 python-dotenv
