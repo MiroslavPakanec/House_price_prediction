@@ -1,0 +1,1 @@
+- from root: `.\scripts\run_experiment_windows.bat ex_4 -Force -Clean`
