@@ -82,7 +82,22 @@
 
 
 - Run inference:
-    - 
+    - run `./scripts/examples/predict_sample.bat` or `./scripts/examples/predict_sample.sh` depending on your OS (the script needs to be modified in order to change the sample)
+    - or run the prediction directly with python:
+        ```
+        python ./src/predict.py \
+            --experiment [EXPERIMENT_NAME] \
+            --longitude [LONGITUDE] \
+            --latitude [LATITUDE] \
+            --housing_median_age [HOUSING_MEDIAN_AGE] \
+            --total_rooms [TOTAL_ROOMS] \
+            --total_bedrooms [TOTAL_BEDROOMS] \
+            --population [POPULATION] \
+            --households [HOUSEHOLDS] \
+            --median_income [MEDIAN_INCOME] \
+            --ocean_proximity [OCEAN_PROXIMITY]
+        ```
+
 
 - Experiments and inference via API: 
     - visit `http://localhost:4000/docs` for documentation or use `curl` or `postman`
