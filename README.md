@@ -69,11 +69,58 @@
     - API is not accessible
     - Ensure that your environment is setup correctly and install dependencies specified in `./requirements.txt`
     - Ensure that command `python` exists (as opposed to `python2` or `python3`) or create an alias
-
-- Run experiments via API: 
-    - visit `http://localhost:4000/docs` or use tools such as `curl` or `postman`
-
+    
 - Run experiments:
-    - run `./scripts/run_experiment.sh <name> --force --clean` or `./scripts/run_experiment_windows.bat <name> -Force -Clean`
-    - `--force` / `-Force` overrides experiment with name <name> if it already exists
-    - `--clean` / `-Clean` removed intermediate artifacts (preprocessed csv data and split numpy files)
+    - run `./scripts/run_experiment.sh [name] --force --clean` or `./scripts/run_experiment_windows.bat <name> -Force -Clean`
+        - `--force` / `-Force` overrides experiment with name [name] if it already exists
+        - `--clean` / `-Clean` removed intermediate artifacts (preprocessed csv data and split numpy files)
+    - or directly with python:
+        - `python ./src/preprocess.py --input_data_path [path/to/raw.csv] --output_data_path [path/to/preprocessed.csv]`
+        - `python ./src/split.py --input_data_path [path/to/preprocessed.csv] --output_directory [experiment-dir] --test-size [test-size]`
+        - `python ./src/train.py --train_data_directory [experiment-dir] --output_directory [experiment-dir]`
+        - `python ./src/evaluate.py --test_data_directory [experiment-dir] --model_directory [experiment-dir] --output_directory [experiment-dir]`
+
+
+- Run inference:
+    - 
+
+- Experiments and inference via API: 
+    - visit `http://localhost:4000/docs` for documentation or use `curl` or `postman`
+    - experiment endpoint: `http://localhost:4000/run_experiment`
+    - prediction endpoint: `http://localhost:4000/predict` 
+
+</br>
+
+## Sample Prediction payloads: 
+```
+{
+  "sample": {
+    "households": 272,
+    "housing_median_age": 44,
+    "latitude": -122.22,
+    "longitude": 37.79,
+    "median_income": 3.5156,
+    "ocean_proximity": "NEAR BAY",
+    "population": 961,
+    "total_bedrooms": 314,
+    "total_rooms": 1487
+  }
+}
+```
+
+```
+{
+  "experiment_name": "my_experiment",
+  "sample": {
+    "households": 272,
+    "housing_median_age": 44,
+    "latitude": -122.22,
+    "longitude": 37.79,
+    "median_income": 3.5156,
+    "ocean_proximity": "NEAR BAY",
+    "population": 961,
+    "total_bedrooms": 314,
+    "total_rooms": 1487
+  }
+}
+```
